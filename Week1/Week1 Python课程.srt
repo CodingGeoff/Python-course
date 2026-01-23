@@ -1,0 +1,1129 @@
+1
+00:00:03,300 --> 00:00:06,800
+Hello everyone, and welcome to today's session
+大家好，欢迎来到今天的分享，
+
+2
+00:00:06,800 --> 00:00:09,800
+where I will explain how to utilize
+我将解释如何利用
+
+3
+00:00:09,800 --> 00:00:13,250
+the natural language processing technology of Python
+Python 的自然语言处理技术，
+
+4
+00:00:13,250 --> 00:00:16,500
+to achieve office automation tailored for translation tasks.
+来实现专为翻译任务定制的办公自动化
+
+5
+00:00:16,500 --> 00:00:19,820
+I have carefully read through the questionnaires submitted by all of you,
+大家提交的问卷我都仔细看过了，
+
+6
+00:00:19,820 --> 00:00:23,500
+and I have customized today's content based on your backgrounds.
+今天的分享内容也是根据各位的背景专门定制的
+
+7
+00:00:23,500 --> 00:00:25,830
+So please listen carefully
+所以请大家认真听，
+
+8
+00:00:25,830 --> 00:00:28,500
+as this directly addresses the pain points you mentioned.
+因为这直接解决了你们提到的痛点
+
+9
+00:00:28,500 --> 00:00:32,000
+I noticed that the vast majority of you are master's degree students,
+我注意到在座绝大多数都是硕士生，
+
+10
+00:00:32,000 --> 00:00:35,780
+currently facing significant pressure regarding your academic research,
+目前科研压力比较大，
+
+11
+00:00:35,780 --> 00:00:39,000
+and you are very concerned about corpus processing and academic writing.
+也非常关心语料库处理和学术写作
+
+12
+00:00:39,000 --> 00:00:41,630
+Many of you might wonder why we still need to learn Python
+很多人可能会纳闷：咱们为啥还要学 Python，
+
+13
+00:00:41,630 --> 00:00:44,500
+when AI tools are already so powerful.
+现在的 AI 工具不都已经这么强了吗？
+
+14
+00:00:44,500 --> 00:00:47,500
+The answer lies in the specific feedback you provided,
+答案就在大家的反馈里
+
+15
+00:00:47,500 --> 00:00:51,520
+where many mentioned that AI often produces hallucinations
+许多人提到，AI 经常“产生幻觉”、瞎编术语，
+
+16
+00:00:51,520 --> 00:00:53,500
+and you dare not use it directly.
+根本不敢直接拿来用
+
+17
+00:00:53,500 --> 00:00:56,500
+You also mentioned the frustration of AI having character limits,
+大家还提到了一个痛点，就是 AI 有字数限制，
+
+18
+00:00:56,500 --> 00:00:59,460
+which makes it impossible to process thousands of documents at once.
+没法一次性处理几千个文档
+
+19
+00:01:00,040 --> 00:01:03,500
+This is where Python comes in, as it allows us to bridge the gap
+这正是 Python 的用武之地，它能打通壁垒，
+
+20
+00:01:03,500 --> 00:01:06,500
+by connecting AI with the local files
+通过连接 AI 和本地文件，
+
+21
+00:01:06,500 --> 00:01:08,820
+to handle massive amounts of data without limits.
+无限制地批量处理海量数据
+
+22
+00:01:09,580 --> 00:01:13,700
+I see from the data that almost everyone is using Windows 10 or 11.
+我看了一下数据，几乎所有人都在用 Windows 10 或 11
+
+23
+00:01:13,710 --> 00:01:16,500
+However, we do have students using Mac,
+不过也有几位同学用的是 Mac，
+
+24
+00:01:16,500 --> 00:01:20,990
+so I will explain the Windows setup primarily, but point out differences.
+所以我主要演示 Windows 设置，但也会指出区别
+
+25
+00:01:21,800 --> 00:01:24,500
+Regarding your technical background,
+关于技术基础，
+
+26
+00:01:24,500 --> 00:01:27,520
+I noticed about half of you felt unsure about absolute file paths.
+我注意到有一半同学对“绝对文件路径”心里没底
+
+27
+00:01:28,120 --> 00:01:31,500
+Please do not worry about this, we will not dive into complex concepts,
+大家千万别担心，我们不讲复杂的概念，
+
+28
+00:01:31,500 --> 00:01:35,000
+but rather focus on practical solutions that work
+而是专注于解决实际问题，
+
+29
+00:01:35,000 --> 00:01:37,860
+regardless of where you save your files.
+不管你的文件存在哪儿都能搞定
+
+30
+00:01:38,450 --> 00:01:41,500
+The survey also highlighted your biggest headaches in translation work,
+问卷还反映了大家翻译工作中最头疼的问题，
+
+31
+00:01:41,500 --> 00:01:43,660
+and we are going to solve them today.
+我们今天就来一一解决
+
+32
+00:01:44,440 --> 00:01:47,500
+The number one problem was processing PDF files
+排名第一的问题就是处理 PDF，
+
+33
+00:01:47,500 --> 00:01:50,500
+full of unwanted hard return line breaks and messy headers.
+里面全是多余的硬回车和乱七八糟的页眉
+
+34
+00:01:50,500 --> 00:01:52,900
+which you currently delete manually.
+大家现在只能手动删除
+
+35
+00:01:53,420 --> 00:01:55,820
+We will write a script to fix that instantly.
+我们会写个脚本，瞬间搞定这个问题
+
+36
+00:01:56,520 --> 00:01:59,500
+Another major issue was the need to manually align texts
+另一个大问题是需要手动对齐文本，
+
+37
+00:01:59,500 --> 00:02:03,000
+to create TMX translation memory files,
+来制作 TMX 翻译记忆库，
+
+38
+00:02:03,000 --> 00:02:06,100
+and the tedious work of copying and pasting.
+复制粘贴的工作量太大了
+
+39
+00:02:06,480 --> 00:02:09,000
+We will look at how Python can automate these repetitive actions
+咱们来看看 Python 怎么自动化这些重复操作，
+
+40
+00:02:09,000 --> 00:02:11,560
+to save you hours of work.
+帮你省下好几个小时
+
+41
+00:02:12,250 --> 00:02:15,980
+I also want to address the fear of coding that some of you expressed.
+我还想聊聊部分同学表达的“代码恐惧症”
+
+42
+00:02:16,320 --> 00:02:19,500
+Many stated that if you see red error text,
+很多人说，一看到屏幕上飘红报错，
+
+43
+00:02:19,500 --> 00:02:22,730
+your instinct is to close the software or wait for help.
+第一反应就是关软件或者等人来救
+
+44
+00:02:23,120 --> 00:02:26,500
+I want to reassure you that our goal today is not to memorize syntax,
+我想给大家吃颗定心丸：今天的目标不是背语法，
+
+45
+00:02:26,500 --> 00:02:29,500
+but to teach you how to write prompts that command AI to write code,
+而是教你写 Prompt（提示词）指挥 AI 写代码，
+
+46
+00:02:29,500 --> 00:02:33,880
+and crucially, how to ask AI to fix those red errors.
+最重要的是，教你怎么让 AI 去修那些报错
+
+47
+00:02:34,460 --> 00:02:37,500
+For those who just want a one-click tool without learning principles,
+如果有同学只想要个“一键式”工具，
+
+48
+00:02:37,500 --> 00:02:40,650
+we will provide packaged scripts.
+我们也会提供封装好的脚本
+
+49
+00:02:40,650 --> 00:02:43,940
+But I encourage you to understand the logic to customize them.
+但我还是鼓励大家理解背后的逻辑，方便以后定制
+
+50
+00:02:44,750 --> 00:02:47,260
+Now let us look at the environment configuration.
+好，现在我们来看看环境配置
+
+51
+00:02:48,000 --> 00:02:52,500
+Since most of you are on Windows, we need to ensure permissions.
+因为大多数人用的都是 Windows，得先确保有权限
+
+52
+00:02:53,060 --> 00:02:55,500
+I see that most of you have administrator rights,
+我看大部分人都有管理员权限，
+
+53
+00:02:55,500 --> 00:02:58,510
+which is excellent news for Windows users.
+这对 Windows 用户来说是个好消息
+
+54
+00:02:58,510 --> 00:03:02,500
+You will need to open PowerShell as an administrator
+你需要以管理员身份打开 PowerShell，
+
+55
+00:03:02,500 --> 00:03:07,490
+and change your execution policy to RemoteSigned.
+把执行策略改成 RemoteSigned
+
+56
+00:03:07,500 --> 00:03:11,500
+Your terminal commands will be slightly different using source on Mac,
+Mac 用户激活环境的命令会稍微不一样，
+
+57
+00:03:11,500 --> 00:03:16,490
+and I have included specific notes in the PDF regarding network issues.
+具体的注意事项和网络问题解决方法，我都写在 PDF 里了
+
+58
+00:03:16,490 --> 00:03:20,890
+Some of you mentioned that accessing foreign websites can be slow.
+有些同学提到访问国外网站很慢
+
+59
+00:03:21,480 --> 00:03:24,000
+To solve this, we will use a tool
+为了解决这个问题，我们会用一个工具，
+
+60
+00:03:24,000 --> 00:03:27,010
+which speeds up downloads by using optimized mirrors.
+通过国内镜像源来加速下载
+
+61
+00:03:27,010 --> 00:03:29,240
+So you do not need to worry about your network speed.
+所以大家不用担心网速问题
+
+62
+00:03:30,100 --> 00:03:34,500
+We will be installing libraries like pandas for data processing,
+我们会安装大家感兴趣的库，比如做数据的 pandas，
+
+63
+00:03:34,500 --> 00:03:37,500
+and NLTK for text analysis,
+做文本分析的 NLTK，
+
+64
+00:03:37,500 --> 00:03:40,450
+and even some automation tools for RPA.
+甚至还有给感兴趣的同学准备的 RPA 自动化工具
+
+65
+00:03:41,460 --> 00:03:44,500
+Finally, regarding the learning materials,
+最后是关于学习资料
+
+66
+00:03:44,500 --> 00:03:48,920
+many requested video replays and PDF tutorials to review at your own pace.
+很多人想要视频回放和 PDF 教程，方便按自己的节奏复习
+
+67
+00:03:49,460 --> 00:03:53,000
+We have prepared all of these materials, including a setup guide.
+这些我们都准备好了，包括一份环境配置指南
+
+68
+00:03:53,000 --> 00:03:58,890
+so you can focus on listening now and practice later.
+所以现在大家可以专心听，回头再上手练习
+
+69
+00:03:58,890 --> 00:04:03,540
+There is a fundamental difference between enterprise and personal development.
+企业级开发和个人提效开发，有着本质的区别
+
+70
+00:04:04,000 --> 00:04:07,000
+Enterprise development focuses on architecture and security,
+企业开发讲究架构、安全，
+
+71
+00:04:07,000 --> 00:04:10,980
+which belongs to the work of professional programmers.
+那是专业程序员的事
+
+72
+00:04:11,250 --> 00:04:14,680
+Personal efficiency development focuses on speed and being lightweight.
+而个人提效开发，讲究的是“快”和“轻”
+
+73
+00:04:14,680 --> 00:04:18,500
+So our learning goal is not to write perfect software,
+所以我们的目标不是写出完美的软件，
+
+74
+00:04:18,500 --> 00:04:23,080
+but to use just a few dozen lines of code to solve repetitive operations.
+而是用几十行代码解决那些机械重复的操作
+
+75
+00:04:23,480 --> 00:04:27,500
+Various AI tools and traditional office software are just isolated tools,
+各种 AI 工具和办公软件往往是孤立的，
+
+76
+00:04:27,500 --> 00:04:31,000
+whereas the core value of Python is acting as the glue
+而 Python 的核心价值就是做“胶水”，
+
+77
+00:04:31,000 --> 00:04:35,330
+that connects AI, documents and databases to build your workflow.
+把 AI、文档和数据库连起来，构建你的工作流
+
+78
+00:04:36,130 --> 00:04:39,000
+This specifically solves the two core pain points in translation:
+这能专门解决翻译工作的两个核心痛点：
+
+79
+00:04:39,000 --> 00:04:41,430
+data cleaning and format layout.
+数据清洗和格式排版
+
+80
+00:04:42,240 --> 00:04:47,410
+Next, I will share two core application cases of Python.
+接下来，我分享两个 Python 的核心应用案例
+
+81
+00:04:47,800 --> 00:04:51,500
+The first case is making bilingual comparison tables.
+第一个案例是制作双语对照表
+
+82
+00:04:51,500 --> 00:04:56,000
+In our work, we often encounter long documents listed one above the other.
+我们经常遇到原文和译文上下排列的长文档，
+
+83
+00:04:56,000 --> 00:05:00,080
+and we need to turn them into a side by side table format.
+我们需要把它转成左右对照的表格形式
+
+84
+00:05:00,540 --> 00:05:03,500
+Manually copying and pasting is extremely inefficient,
+手动复制粘贴效率极低，
+
+85
+00:05:03,500 --> 00:05:06,900
+and AI processing has limits on the amount of text input.
+而 AI 又有输入字数限制
+
+86
+00:05:07,110 --> 00:05:11,500
+However Python can read text without limits and distinguish lines.
+但 Python 可以无限制读取文本，自动区分原文和译文
+
+87
+00:05:11,500 --> 00:05:15,000
+Using pandas, it can export to Excel with one click
+利用 pandas，我们可以一键导出 Excel，
+
+88
+00:05:15,000 --> 00:05:18,500
+or directly generate a Word document with formatting,
+或者直接生成排好格式的 Word 文档，
+
+89
+00:05:18,500 --> 00:05:22,860
+so no manual adjustment is needed.
+完全不需要手动调格式
+
+90
+00:05:23,370 --> 00:05:28,070
+Imagine this program as a smart assistant helping you organize work.
+你可以把这个程序想象成一个帮你整理稿件的智能助手
+
+91
+00:05:28,500 --> 00:05:32,000
+Its goal is to take a text file where sentences are mixed
+它的任务就是把中英文混排的文本文件
+
+92
+00:05:32,000 --> 00:05:34,620
+and convert it into a table.
+转换成表格
+
+93
+00:05:34,960 --> 00:05:37,020
+The process starts with a setup phase.
+过程从设置阶段开始
+
+94
+00:05:37,720 --> 00:05:41,990
+The code first collects the necessary digital tools.
+代码首先会调用所需的数字工具
+
+95
+00:05:42,550 --> 00:05:45,500
+After getting its tools ready, the program acts like a detective,
+准备好后，程序就像个侦探，
+
+96
+00:05:45,500 --> 00:05:48,650
+it scans the folder you are currently working in.
+扫描你当前工作的文件夹
+
+97
+00:05:49,320 --> 00:05:53,910
+It is looking for a text file with "bilingual" in its name.
+寻找文件名包含“bilingual”（双语）的文本文件
+
+98
+00:05:54,220 --> 00:05:57,330
+If it finds the file, it picks it up to start working.
+一旦找到，就开始干活
+
+99
+00:05:58,040 --> 00:06:01,500
+If it searches and finds nothing, it does not crash.
+如果啥也没找到，它也不会崩溃，
+
+100
+00:06:01,500 --> 00:06:06,140
+Instead it automatically creates a small sample file for you.
+而是会自动给你生成一个示例文件
+
+101
+00:06:06,330 --> 00:06:09,530
+This ensures that the process always has something to work on.
+这确保了程序总有东西可跑
+
+102
+00:06:09,800 --> 00:06:12,660
+Once the file is ready, the core processing begins.
+文件就绪后，核心处理就开始了
+
+103
+00:06:13,390 --> 00:06:15,580
+Think of this part as a sorting machine.
+把这部分想象成一台分拣机
+
+104
+00:06:16,140 --> 00:06:19,570
+The program reads the text file line by line.
+程序逐行读取文本
+
+105
+00:06:19,830 --> 00:06:23,500
+It ignores any empty space to keep things clean.
+它会忽略空行以保持整洁，
+
+106
+00:06:23,500 --> 00:06:26,500
+It performs a check: does this line contain Chinese?
+然后检查：这一行包含中文吗？
+
+107
+00:06:26,500 --> 00:06:29,860
+If yes, it throws that line into a pile labeled Chinese.
+如果是，就丢进“中文”堆里
+
+108
+00:06:30,160 --> 00:06:34,140
+If no, it throws that line into a pile labeled English.
+如果不是，就丢进“英文”堆里
+
+109
+00:06:34,920 --> 00:06:38,530
+After separating, the program aligns them side by side.
+分好类后，程序会把它们并排对齐
+
+110
+00:06:38,780 --> 00:06:42,500
+It creates a spreadsheet with English and Chinese columns.
+生成一个含中英文两列的电子表格
+
+111
+00:06:42,500 --> 00:06:47,500
+It looks at the clock to see the exact current time.
+它还会看一眼时钟，获取当前精确时间
+
+112
+00:06:47,500 --> 00:06:55,150
+It adds this time to the file name to avoid overwriting.
+把时间加到文件名里，防止覆盖旧文件
+
+113
+00:06:55,650 --> 00:06:59,940
+This spreadsheet is then saved to your computer.
+然后，这个表格会保存到你的电脑上
+
+114
+00:07:01,340 --> 00:07:03,680
+The final step is about making the result look beautiful.
+最后一步是美化
+
+115
+00:07:04,120 --> 00:07:07,500
+The program opens a blank word document and draws a table.
+程序打开一个空白 Word，画一个表格
+
+116
+00:07:07,500 --> 00:07:14,980
+It fills the table with your sorted text.
+把分拣好的文本填进去
+
+117
+00:07:15,640 --> 00:07:18,160
+It goes one step further by acting like a typesetter.
+它甚至像个排版工：
+
+118
+00:07:18,350 --> 00:07:22,500
+It changes the English text to a standard professional style,
+把英文设成标准的专业字体，
+
+119
+00:07:22,500 --> 00:07:29,680
+and sets the Chinese text to a font good for Asian characters.
+把中文设成适合亚洲字符的字体
+
+120
+00:07:30,260 --> 00:07:33,500
+It saves this final polished document for you.
+最后保存这个排版精美的文件
+
+121
+00:07:33,500 --> 00:07:37,500
+You start with a simple text file, and this automation does the heavy lifting
+你只需提供一个简单文本，自动化搞定繁重工作，
+
+122
+00:07:37,500 --> 00:07:43,120
+giving you a perfect Excel and Word without copying and pasting.
+直接拿走完美的表格和文档，一次复制粘贴都不用
+
+123
+00:07:43,770 --> 00:07:48,870
+The second case is batch processing of scanned PDF files.
+第二个案例是批量处理扫描版 PDF
+
+124
+00:07:48,970 --> 00:07:52,500
+Python can go through a folder containing all your PDF files,
+Python 可以遍历文件夹里的 PDF，
+
+125
+00:07:52,500 --> 00:07:58,840
+call upon AI interfaces like Baidu or Alibaba Cloud for OCR.
+调用百度或阿里云等接口进行文字识别
+
+126
+00:07:59,440 --> 00:08:03,740
+We can also use multithreading to increase recognition speed.
+我们还能用多线程技术来提升速度
+
+127
+00:08:04,430 --> 00:08:08,000
+Please note that some AI interfaces have query limits per second.
+注意，有些 AI 接口限制每秒查询次数
+
+128
+00:08:08,000 --> 00:08:12,000
+You can choose an interface with looser limits,
+你可以选限制宽松的接口，
+
+129
+00:08:12,000 --> 00:08:16,000
+or add a delay function to avoid being blocked.
+或者加个延迟，免得被服务器屏蔽
+
+130
+00:08:17,140 --> 00:08:20,500
+If you are processing confidential files like contracts,
+如果处理合同这类保密文件，
+
+131
+00:08:20,500 --> 00:08:23,500
+you can download free offline models to your local computer.
+可以下载免费的离线模型到本地
+
+132
+00:08:23,500 --> 00:08:29,450
+Processing locally without uploading ensures data security.
+本地处理不上传，确保数据安全
+
+133
+00:08:30,220 --> 00:08:34,040
+This project acts like a highly intelligent Digital Research Assistant.
+这个项目就像一个高智商的科研助手
+
+134
+00:08:34,770 --> 00:08:38,000
+Its job is to read through complex academic PDF files
+它的工作是通读复杂的学术 PDF，
+
+135
+00:08:38,000 --> 00:08:42,780
+and automatically extract important technical terms.
+自动提取重要的技术术语
+
+136
+00:08:43,620 --> 00:08:46,500
+Imagine you have a dense scientific paper
+想象你有一篇密集的科技论文，
+
+137
+00:08:46,500 --> 00:08:49,910
+and want a glossary without reading every sentence.
+想不读全文就整理出一份术语表
+
+138
+00:08:50,370 --> 00:08:56,180
+This program does exactly that using advanced filters.
+这个程序利用高级过滤器就能帮你搞定
+
+139
+00:08:56,590 --> 00:08:58,980
+The process begins with a preparation phase.
+流程从准备阶段开始
+
+140
+00:08:59,470 --> 00:09:02,500
+The computer gathers necessary tools and dictionaries.
+计算机先加载必要的工具和词典
+
+141
+00:09:02,500 --> 00:09:05,420
+to understand human text.
+以理解人类文本
+
+142
+00:09:05,800 --> 00:09:10,170
+Once loaded, the program downloads the PDF to analyze.
+加载后，程序读取你要分析的 PDF
+
+143
+00:09:10,700 --> 00:09:12,370
+It acts like a very careful reader.
+它像个非常细心的读者
+
+144
+00:09:12,780 --> 00:09:15,920
+It opens the file and fixes common formatting errors.
+打开文件，修复常见的格式错误
+
+145
+00:09:16,430 --> 00:09:21,750
+For example, stitching words split by hyphens.
+比如，拼好被连字符切断的单词
+
+146
+00:09:22,120 --> 00:09:25,000
+It also scrubs away distraction marks like citations,
+它还会擦除引文标记等干扰项，
+
+147
+00:09:25,000 --> 00:09:27,840
+so it can focus purely on the words.
+只专注于文字本身
+
+148
+00:09:28,430 --> 00:09:33,540
+After cleaning, it moves to finding potential terms.
+清洗完，就开始寻找潜在术语
+
+149
+00:09:34,110 --> 00:09:37,880
+It uses linguistic rules to look for specific patterns.
+它利用语言学规则查找特定模式
+
+150
+00:09:38,200 --> 00:09:43,080
+It specifically hunts for noun phrases where technical terms live.
+专门搜寻技术术语所在的“名词短语”
+
+151
+00:09:43,540 --> 00:09:48,380
+For example, combinations like "artificial intelligence".
+比如“人工智能”这样的组合
+
+152
+00:09:48,680 --> 00:09:52,430
+At the same time, it acts like a security guard with a blacklist.
+同时，它又像个拿着黑名单的保安
+
+153
+00:09:53,110 --> 00:09:56,500
+It automatically rejects generic academic fluff words,
+自动拦截通用的学术“水词”
+
+154
+00:09:56,500 --> 00:10:03,810
+like "figure" or "conclusion", as they are not technical terms.
+像“图表”或“结论”，这些都不是技术术语
+
+155
+00:10:04,700 --> 00:10:10,170
+It filters thousands of useless words to ensure quality.
+它过滤掉成千上万个无用词，确保质量
+
+156
+00:10:10,910 --> 00:10:14,540
+Once it has a list, the program acts like a judge.
+有了列表后，程序变身成法官
+
+157
+00:10:14,900 --> 00:10:19,200
+It uses a scoring system to decide word importance.
+利用评分系统裁决单词重要性
+
+158
+00:10:19,540 --> 00:10:25,080
+It counts frequency and checks uniqueness to the document.
+计算词频，并检查该词的独特性
+
+159
+00:10:25,610 --> 00:10:29,500
+It also performs a smart cleanup, merging similar terms.
+它还会智能清理，合并相似的词
+
+160
+00:10:29,500 --> 00:10:35,520
+like "method" and "methods".
+比如单复数形式
+
+161
+00:10:36,060 --> 00:10:41,360
+It removes shorter terms already part of better long terms.
+删除已包含在长术语中的短词，避免重复
+
+162
+00:10:42,560 --> 00:10:46,000
+Finally, the program organizes the winning terms.
+最后，程序组织这些“赢家”词汇
+
+163
+00:10:46,000 --> 00:10:49,880
+sorting them by their importance score.
+按重要性得分排序
+
+164
+00:10:50,500 --> 00:10:55,650
+It even grabs a snippet of the original text for context.
+它甚至会抓取一小段原文作为上下文
+
+165
+00:10:55,850 --> 00:10:59,400
+It saves all this into a neat spreadsheet.
+所有信息保存到一个整洁的表格里
+
+166
+00:10:59,730 --> 00:11:03,500
+You end up with a clean professional glossary.
+你最终得到一份干净、专业的术语表
+
+167
+00:11:03,500 --> 00:11:08,360
+including the term, translation space, and importance score.
+包含术语、翻译栏和重要性分数
+
+168
+00:11:09,370 --> 00:11:14,740
+I also want to clarify why we still need traditional NLP methods.
+我也想解释一下，为啥还需要学传统 NLP 方法
+
+169
+00:11:14,750 --> 00:11:17,150
+Even though AI capabilities are strong.
+尽管现在的 AI 能力很强
+
+170
+00:11:17,810 --> 00:11:21,500
+AI can have hallucinations and is not always controllable,
+但 AI 会有幻觉，结果不可控，
+
+171
+00:11:21,500 --> 00:11:26,580
+whereas traditional logic is more precise in data extraction.
+而传统逻辑在数据提取上更精确
+
+172
+00:11:27,230 --> 00:11:31,000
+After obtaining text through OCR,
+通过 OCR 获取文本后，
+
+173
+00:11:31,000 --> 00:11:37,790
+we can use traditional methods for word division and tagging.
+我们可以用传统方法进行分词和标注
+
+174
+00:11:38,520 --> 00:11:41,500
+We can also automatically extract entities,
+我们还可以自动提取实体，
+
+175
+00:11:41,500 --> 00:11:45,200
+such as names, organizations, time, and amounts.
+比如人名、机构、时间和金额
+
+176
+00:11:45,830 --> 00:11:49,000
+This applies directly to building professional databases.
+这能直接用于构建专业数据库
+
+177
+00:11:49,000 --> 00:11:53,000
+like scanning contracts to extract names and amounts.
+比如扫描合同，提取名称和金额
+
+178
+00:11:53,000 --> 00:11:57,040
+generating an Excel file.
+生成 Excel 文件
+
+179
+00:11:57,350 --> 00:12:00,500
+Processing large files takes only about 10 seconds,
+处理大文件也只要 10 秒左右，
+
+180
+00:12:00,500 --> 00:12:04,220
+far more efficient than manual work.
+效率远超人工
+
+181
+00:12:04,570 --> 00:12:08,430
+I have also demonstrated the results of the classic paper.
+我还演示了那篇经典论文的结果
+
+182
+00:12:08,430 --> 00:12:11,500
+"Attention is all you need"
+也就是《Attention is all you need》
+
+183
+00:12:11,500 --> 00:12:16,170
+I will share the code, but first you need to configure Python.
+我会分享代码，但得先配好 Python 环境
+
+184
+00:12:16,200 --> 00:12:21,810
+For zero foundation students, I will organize the process in detail.
+针对零基础同学，我会详细梳理流程
+
+185
+00:12:22,520 --> 00:12:26,000
+Now I will explain the basic configuration for Windows.
+现在来讲讲 Windows 的基本配置
+
+186
+00:12:26,000 --> 00:12:31,340
+since the survey showed that is what most of you use.
+因为调查显示大家都用这个
+
+187
+00:12:32,040 --> 00:12:36,800
+Mac devices are basically the same, with few command differences.
+Mac 操作基本一致，只有少数命令不同
+
+188
+00:12:36,810 --> 00:12:42,210
+Students who can't keep up can view the document later.
+跟不上的同学可以稍后查看文档
+
+189
+00:12:43,040 --> 00:12:46,000
+First, download Python from the official website.
+第一步，去官网下载 Python
+
+190
+00:12:46,000 --> 00:12:49,000
+I recommend version 3.12 or 3.13.
+建议选 3.12 或 3.13 版本
+
+191
+00:12:49,000 --> 00:12:56,700
+not too new to avoid issues, nor too old for security.
+避开太新或太旧的版本，确保兼容和安全
+
+192
+00:12:57,250 --> 00:13:00,500
+When installing on Windows, check "Add Python to Path".
+安装时一定要勾选 "Add Python to PATH"
+
+193
+00:13:00,500 --> 00:13:04,300
+to avoid manually configuring variables later.
+免得以后手动配变量
+
+194
+00:13:05,420 --> 00:13:08,000
+Second step is specifically for Windows.
+第二步是 Windows 特有的
+
+195
+00:13:08,000 --> 00:13:13,000
+Search for PowerShell, run as administrator.
+搜索 PowerShell，以管理员身份运行
+
+196
+00:13:13,000 --> 00:13:18,610
+and input the command "Get-ExecutionPolicy".
+输入命令 `Get-ExecutionPolicy`
+
+197
+00:13:18,840 --> 00:13:22,000
+If it shows restricted, input "Set-ExecutionPolicy RemoteSigned".
+如果受限，输入 `Set-ExecutionPolicy RemoteSigned`
+
+198
+00:13:22,000 --> 00:13:30,120
+Press Y to confirm unlocking permissions.
+按 Y 确认解锁权限
+
+199
+00:13:30,820 --> 00:13:36,410
+Third step, choose an editor like VS Code, PyCharm or Cursor.
+第三步，选个编辑器，比如 VS Code、PyCharm 或 Cursor
+
+200
+00:13:36,410 --> 00:13:38,260
+Just choose according to your needs.
+大家按需选择就行
+
+201
+00:13:38,790 --> 00:13:42,500
+Fourth step is configuring a virtual environment.
+第四步配置虚拟环境
+
+202
+00:13:42,500 --> 00:13:46,500
+Do not let all projects use the same environment.
+千万别混用环境，
+
+203
+00:13:46,500 --> 00:13:55,380
+I suggest establishing an independent one for each project.
+建议为每个项目建立独立环境
+
+204
+00:13:55,720 --> 00:13:59,000
+Windows inputs creation and activation commands.
+Windows 输入创建激活命令
+
+205
+00:13:59,000 --> 00:14:05,840
+Mac inputs "source venv/bin/activate".
+Mac 输入 `source venv/bin/activate`
+
+206
+00:14:06,250 --> 00:14:12,020
+Fifth step is installing libraries using "pip install".
+第五步用 `pip install` 安装库
+
+207
+00:14:12,670 --> 00:14:16,000
+I recommend installing "uv" tool first to speed up.
+建议先装 "uv" 工具来加速
+
+208
+00:14:16,000 --> 00:14:26,290
+Then use "uv pip install" for pandas, NLTK and SciPy.
+然后用 `uv pip install` 安装 pandas 等库
+
+209
+00:14:26,930 --> 00:14:30,000
+After configuration, do not memorize code.
+配好后，不用死记硬背
+
+210
+00:14:30,000 --> 00:14:34,000
+You can use AI to assist in generating Python scripts.
+可以用 AI 辅助生成脚本
+
+211
+00:14:34,000 --> 00:14:38,000
+For simple needs, use natural language to describe requirements.
+简单的需求，直接用大白话描述
+
+212
+00:14:38,000 --> 00:14:44,000
+like "read PDF, extract numbers and terms, and save".
+比如“读 PDF，提取数字和术语，并保存”
+
+213
+00:14:44,000 --> 00:14:50,570
+asking it to write a Python script for you.
+让它帮你写脚本
+
+214
+00:14:51,870 --> 00:14:55,000
+For complex projects, learn professional prompt templates.
+复杂项目可以学点专业 Prompt
+
+215
+00:14:55,000 --> 00:14:59,640
+to let AI generate code that better fits your needs.
+让代码更符合需求
+
+216
+00:15:00,010 --> 00:15:03,550
+Simply copy the AI code into your editor to run.
+复制粘贴代码运行即可
+
+217
+00:15:03,550 --> 00:15:07,000
+Python is not for rote memorization,
+Python 不是用来死记硬背的，
+
+218
+00:15:07,000 --> 00:15:12,810
+but a tool unlocking office software functions.
+而是解锁办公软件功能的工具
+
+219
+00:15:13,430 --> 00:15:17,000
+Once mastered, it links local files and AI,
+学会后，联动本地文件和 AI，
+
+220
+00:15:17,000 --> 00:15:23,210
+improving work efficiency.
+提升工作效率
+
+221
+00:15:23,920 --> 00:15:28,490
+All processes are in the document shared in the group.
+所有流程文档都在群里
+
+222
+00:15:28,490 --> 00:15:30,980
+Next is Q&A time.
+接下来是问答环节
+
+223
+00:15:31,560 --> 00:15:36,120
+Turn on mic to ask or screen share for problems.
+可以开麦提问或共享屏幕
+
+224
+00:15:36,130 --> 00:15:41,560
+I will display slides for Python installation steps.
+我会投屏演示安装步骤
+
+225
+00:15:42,320 --> 00:15:45,000
+If no questions, this course ends here.
+没问题的话，今天就到这里
+
+226
+00:15:45,000 --> 00:15:49,200
+Welcome to exchange ideas anytime later.
+欢迎随时交流

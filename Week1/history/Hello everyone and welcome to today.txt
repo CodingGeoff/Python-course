@@ -1,0 +1,126 @@
+Hello everyone and welcome to today's session where I will explain how to utilize the natural language processing technology of Python to achieve office automation specifically tailored for translation tasks
+
+I have carefully read through the questionnaires submitted by all of you and I have customized today's content based on your specific backgrounds and needs so please listen carefully as this directly addresses the pain points you mentioned
+
+I noticed that the vast majority of you are Master's degree students currently facing significant pressure regarding your academic research and you are very concerned about corpus processing and academic writing
+
+Many of you might wonder why we still need to learn Python when AI tools are already so powerful
+
+The answer lies in the specific feedback you provided where many of you mentioned that AI often produces hallucinations or fabricates terminology and you dare not use it directly
+
+You also mentioned the frustration of AI having character limits which makes it impossible to process thousands of documents or a whole folder at once
+
+This is where Python comes in as it allows us to bridge the gap by connecting AI with your local files to handle massive amounts of data without the limits of a web interface
+
+I see from the data that almost everyone is using Windows 10 or Windows 11 however we do have one student using a Mac with an Apple Silicon chip so I will explain the Windows setup primarily but I will also point out the specific differences for that Mac user
+
+Regarding your technical background I noticed that about half of you felt unsure about concepts like absolute file paths
+
+Please do not worry about this because we will not be diving into complex computer science concepts but rather we will focus on practical solutions that work regardless of where you save your files
+
+The survey also highlighted your biggest headaches in translation work and we are going to solve them today
+
+The number one problem you all listed was processing PDF files that are full of unwanted hard return line breaks and messy headers which you currently delete manually
+We will write a script to fix that instantly
+
+Another major issue you mentioned was the need to manually align Chinese and English texts to create TMX translation memory files and the tedious work of copying and pasting
+
+We will look at how Python can automate these repetitive actions to save you hours of work
+
+I also want to address the fear of coding that some of you expressed
+
+Many of you stated that if you see red error text your instinct is to close the software or wait for help
+
+I want to reassure you that our goal today is not to make you memorize syntax but to teach you how to write prompts that command AI to write the code for you and crucially how to ask AI to fix those red errors when they appear
+
+For those of you who said you just want a one click tool to solve problems without learning principles we will provide packaged scripts but I encourage you to understand the logic so you can customize them
+
+Now let us look at the environment configuration
+
+Since most of you are on Windows we need to ensure you have permissions to run scripts
+
+I see that most of you have administrator rights which is excellent news
+
+For Windows users you will need to open PowerShell as an administrator and change your execution policy to remote signed which allows you to run the automation scripts we will build
+
+For the Mac user, your terminal commands will be slightly different using source to activate environments and I have included those specific notes in the course PDF
+
+Regarding network issues some of you mentioned that accessing foreign websites can be slow or impossible
+
+To solve this we will use a tool which speeds up the download of Python libraries by using optimized mirrors so you do not need to worry about your network speed
+
+We will be installing libraries that you expressed interest in such as Pandas for data processing and NLTK for text analysis and even some automation tools for those interested in robotic process automation
+
+Finally regarding the learning materials many of you requested video replays and PDF tutorials because you prefer to review at your own pace
+
+We have prepared all of these materials including a guide on how to configure your environment from scratch so you can focus on listening now and practice later
+
+In actual work environments there is a fundamental difference between enterprise level development and personal efficiency development
+Enterprise development focuses on architecture and security and handling high traffic which belongs to the work of professional programmers
+Personal efficiency development focuses on speed and being lightweight so our learning goal is not to write perfect software but to use just a few dozen lines of code to solve mechanical and repetitive operations which saves a huge amount of time
+Various AI tools and traditional office software are just single isolated tools whereas the core value of Python is acting as the glue that connects AI and Word and PDF documents and databases to build your own exclusive workflow
+This specifically solves the two core pain points in translation work which are data cleaning and format layout
+Next I will share two core application cases of Python in translation office automation
+The first case is making bilingual comparison tables because in our work we often encounter long documents where the original text and translation are listed one above the other and we need to turn them into a side by side table format
+Manually copying and pasting is extremely inefficient and AI processing has limits on the amount of text input
+However Python can read text without limits and distinguish between the original line and the translation line and by using the pandas library it can export to Excel with one click or directly generate a Word document with the font and line spacing already formatted so no manual adjustment is needed
+
+Imagine this program as a smart digital assistant that helps you organize translation work. Its goal is to take a text file where English and Chinese sentences are mixed together and convert it into a table.
+
+The process starts with a setup phase. The code first collects the necessary digital tools it needs to read and write documents. After getting its tools ready the program acts like a detective. It scans the folder you are currently working in. It is looking for a specific text file that includes the word bilingual in its name. If it finds the file it picks it up to start working. However if it searches and finds nothing it does not crash or give up. Instead it automatically creates a small sample file for you. This ensures that the process always has something to work on.
+
+Once the file is ready the core processing begins. Think of this part as a sorting machine. The program reads the text file line by line from top to bottom. It ignores any empty space to keep things clean. For every single line of text it performs a check. It asks does this line contain any Chinese characters. If the answer is yes it throws that line into a pile labeled Chinese. If the answer is no it throws that line into a pile labeled English.
+
+After separating all the sentences the program aligns them side by side. It creates a spreadsheet where the first column contains the English text and the second column contains the Chinese text. To keep your files organized it looks at the clock to see the exact current time. It adds this time to the filename so you never accidentally overwrite your previous work. This spreadsheet is then saved to your computer.
+
+The final step is about making the result look beautiful for printing or reading. The program opens a blank Word document. It draws a table with two columns just like in the spreadsheet. It fills the table with your sorted text. It goes one step further by acting like a typesetter. It changes the font of the English text to a standard professional style and it sets the Chinese text to a specific font that looks good for Asian characters. It saves this final polished document for you.
+
+you start with a simple text file and this automation does all the heavy lifting to give you a perfectly formatted Excel sheet and a Word document without you needing to copy and paste a single thing.
+
+
+The second case is the batch processing of scanned PDF files that cannot be copied directly
+Python can use the system library to go through a folder containing all your PDF files and call upon AI interfaces like Baidu Smart Cloud or Alibaba Cloud to perform text recognition
+We can also use multithreading technology to increase the recognition speed
+Please note that some AI interfaces have a limit on the number of queries per second so you can choose an interface with looser limits or add a delay function in the code to avoid being blocked by the server for requesting too fast
+If you are processing confidential files like contracts you can download free open source offline models to your local computer and use Python libraries to complete the processing without uploading files to the cloud which ensures data security
+
+
+This project acts like a highly intelligent digital research assistant. Its primary job is to read through complex academic PDF files and automatically extract the most important technical terms and concepts. Imagine you have a dense scientific paper and you want to create a glossary of the key vocabulary without reading every single sentence. This program does exactly that by using a series of advanced filters and mathematical scoring systems.
+
+The process begins with a preparation phase. The computer first gathers all the necessary digital tools and language dictionaries it needs to understand human text. Once these tools are loaded the program downloads the PDF document you want to analyze. It acts like a very careful reader. It opens the file and fixes common formatting errors. For example if a word is split by a hyphen at the end of a line the program stitches it back together. It also scrubs away distraction marks like reference numbers or citations so it can focus purely on the words.
+
+After cleaning the text the program moves to the most critical step which is finding potential terms. It uses a set of linguistic rules to look for specific patterns. It is specifically hunting for noun phrases which are usually where technical terms live. For example it looks for combinations like artificial intelligence or neural network. At the same time it acts like a security guard with a strict blacklist. It automatically rejects generic academic fluff words. Words like figure or table or conclusion or therefore are blocked because they are not useful technical terms. It filters out thousands of these useless words to ensure only high quality candidates remain.
+
+Once it has a list of potential terms the program acts like a judge. It uses a mathematical scoring system to decide how important each word is. It counts how often a word appears but it also checks how unique that word is to this specific document. This prevents common words from getting a high score. It also performs a smart cleanup. If it finds two very similar terms like method and methods it merges them. If it finds a short term that is already part of a better long term it removes the shorter one to avoid repetition.
+
+Finally the program takes all the winning terms that survived these tests and organizes them. It sorts them by their importance score. It even grabs a small snippet of the original text where the word was used so you can see the context. It saves all of this information into a neat spreadsheet file. You end up with a clean professional glossary that includes the English term a space for you to add a translation and a score showing how important that term is to the document.
+
+I also want to clarify why we still need to learn traditional natural language processing methods even though AI capabilities are strong
+AI can have hallucinations and the output results are not always controllable whereas traditional logic is more precise in data extraction and professional text analysis
+After obtaining text through optical character recognition we can use traditional methods to complete a series of processing tasks including dividing words removing useless vocabulary and tagging parts of speech
+We can also automatically extract entity information from the text such as person names place names organization names time and monetary amounts
+This capability can be directly applied to building professional databases such as writing a Python script to scan legal or medical contracts and extract the organization names and amounts to generate an Excel file
+Even when processing large files the whole process takes only about ten seconds which is far more efficient than manual work
+I have also demonstrated the text processing results of the classic paper Attention Is All You Need and I will share the relevant code with everyone later
+Before running the code you need to configure the Python environment and for students with zero foundation I will organize the configuration process in detail to help you learn
+Now I will explain the basic environment configuration steps for Python and this course will focus on Windows devices since the pre class survey showed that is what most of you use
+The operation process for Mac devices is basically the same with only a few commands being different so students who cannot keep up can view the document arranged after class which will also be shared in the group
+The first step is to download Python by going to the official website and I recommend version 3.12 or 3.13 because the version should not be too new to avoid compatibility issues with third party libraries nor too old to prevent system vulnerabilities
+When installing on Windows you must check the option that says Add Python to path to avoid manually configuring environment variables later
+The second step is a specific configuration for Windows systems so Mac users can skip this
+Search for Powershell in the system search box and right click to select run as administrator then input the command get execution policy
+If the result shows restricted it means the computer cannot run scripts so you need to continue by inputting the command set execution policy remotesigned and then press Y to confirm unlocking the script running permission
+The third step is to choose an editor such as VSCode or Pycharm or Cursor as all these tools work normally so just choose according to your needs
+The fourth step is configuring a virtual environment which is a key step because you should not let all projects use the same environment as this avoids version conflicts with third party libraries for different projects
+I suggest establishing an independent virtual environment for each project by opening the terminal in the project folder
+Windows systems input the command to create and activate while Mac systems input source venv activate and after activation a small bracket with VENV will appear at the front of the command line
+The fifth step is installing third party libraries using the standard command pip install plus the library name
+I recommend installing the UV tool first using the command pip install UV and then using uv pip install plus the library name for subsequent installations as this can significantly improve download speed for libraries like pandas and NLTK and scipy
+After the environment configuration is complete you do not need to memorize code by rote nor do you need to write from scratch because you can use AI to assist in generating Python scripts
+For simple office automation needs you can use natural language to clearly describe specific requirements to the AI such as asking it to write a Python script to read a PDF and extract all numbers and nouns and terms and amounts and finally save them into Excel
+If you are developing a complex project you can learn professional prompt templates and development strategies to let AI generate code that better fits your needs
+You can simply copy the code generated by AI into your editor to run it because Python is not a course that requires rote memorization for exams but rather a practical tool that unlocks advanced functions of office software and bonds various tools together
+Once mastered it can also achieve the linkage between local files and AI allowing AI to understand the professional knowledge settled locally and further improve work efficiency
+All the operation processes of this course have been organized into a document and shared in the group so next we will enter the question and answer time
+Everyone can turn on their microphone to ask questions or start screen sharing to consult on problems and at the same time I will display the presentation slides so everyone can follow the steps for Python installation
+If there are no temporary questions this course ends here and everyone is welcome to exchange ideas at any time if you have relevant questions later

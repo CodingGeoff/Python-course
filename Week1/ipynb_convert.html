@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jupyter Notebook 转 Python 转换器</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+
+        .container {
+            background-color: var(--surface);
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        h1 { margin-top: 0; color: var(--primary); font-size: 1.5rem; }
+        p { color: #64748b; font-size: 0.95rem; }
+
+        .upload-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .upload-box:hover { border-color: var(--primary); background-color: #eff6ff; }
+        .upload-box input {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer;
+        }
+
+        .options {
+            display: flex; gap: 20px; margin-bottom: 20px; font-size: 0.9rem;
+        }
+        
+        .options label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            resize: vertical;
+            background-color: #f8fafc;
+            box-sizing: border-box; 
+        }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-secondary { background-color: #e2e8f0; color: #475569; }
+        button:hover { opacity: 0.9; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .hidden { display: none; }
+        .success-msg { color: #16a34a; font-weight: bold; margin-left: 10px; opacity: 0; transition: opacity 0.5s; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📝 Jupyter (.ipynb) to Python (.py)</h1>
+    <p>完全在本地浏览器运行，数据安全。不会修改您的原始文件。</p>
+
+    <div class="upload-box" id="dropZone">
+        <span id="uploadText">点击或拖拽 .ipynb 文件到这里</span>
+        <input type="file" id="fileInput" accept=".ipynb">
+    </div>
+
+    <div class="options">
+        <label>
+            <input type="checkbox" id="commentMagic" checked> 
+            自动注释 Magic 命令 (如 !pip, %time)
+        </label>
+        <label>
+            <input type="checkbox" id="addMarkers" checked> 
+            保留 Cell 分隔符 (# %% [Cell])
+        </label>
+    </div>
+
+    <textarea id="outputArea" placeholder="转换后的代码将显示在这里..." readonly></textarea>
+
+    <div class="btn-group">
+        <button id="copyBtn" class="btn-secondary" disabled>📋 复制全部</button>
+        <button id="downloadBtn" class="btn-primary" disabled>⬇️ 下载 .py 文件</button>
+        <span id="msg" class="success-msg">已复制!</span>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const outputArea = document.getElementById('outputArea');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const uploadText = document.getElementById('uploadText');
+    const msg = document.getElementById('msg');
+    
+    let currentFileName = "script";
+
+    fileInput.addEventListener('change', handleFile);
+
+    function handleFile(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        currentFileName = file.name.replace('.ipynb', '');
+        uploadText.textContent = `已选择: ${file.name}`;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const notebook = JSON.parse(event.target.result);
+                convertNotebook(notebook);
+            } catch (err) {
+                alert("文件解析失败，请确保是有效的 .ipynb 文件");
+                console.error(err);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function convertNotebook(notebook) {
+        const commentMagic = document.getElementById('commentMagic').checked;
+        const addMarkers = document.getElementById('addMarkers').checked;
+        
+        let pyLines = [];
+        
+        if (!notebook.cells) {
+            alert("无效的 Notebook 格式");
+            return;
+        }
+
+        notebook.cells.forEach((cell, index) => {
+            if (cell.cell_type === 'code') {
+                const source = cell.source;
+                if (source && source.length > 0) {
+                    // 添加 Cell 分隔符
+                    if (addMarkers) {
+                        pyLines.push(`\n# %% [Cell ${index + 1}]\n`);
+                    } else {
+                        pyLines.push('\n');
+                    }
+
+                    // 处理每一行代码
+                    source.forEach(line => {
+                        // 移除行尾换行符以便重新处理
+                        let cleanLine = line.replace(/(\r\n|\n|\r)/gm, "");
+                        
+                        // 处理 Magic Commands
+                        let trimmed = cleanLine.trim();
+                        if (commentMagic && (trimmed.startsWith('!') || trimmed.startsWith('%'))) {
+                            pyLines.push(`# ${cleanLine}  # [Magic Command]`);
+                        } else {
+                            pyLines.push(cleanLine);
+                        }
+                    });
+                    
+                    pyLines.push('\n'); // 每个 Cell 结束后换行
+                }
+            }
+        });
+
+        const finalCode = pyLines.join('\n');
+        outputArea.value = finalCode;
+        
+        // 激活按钮
+        downloadBtn.disabled = false;
+        copyBtn.disabled = false;
+        
+        // 绑定下载事件
+        downloadBtn.onclick = () => downloadFile(finalCode, `${currentFileName}.py`);
+    }
+
+    function downloadFile(content, filename) {
+        const blob = new Blob([content], { type: 'text/x-python' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    copyBtn.addEventListener('click', () => {
+        outputArea.select();
+        document.execCommand('copy');
+        msg.style.opacity = 1;
+        setTimeout(() => msg.style.opacity = 0, 2000);
+    });
+
+    // 重新转换当选项改变时
+    document.getElementById('commentMagic').addEventListener('change', () => {
+        if (fileInput.files[0]) handleFile({target: fileInput});
+    });
+    document.getElementById('addMarkers').addEventListener('change', () => {
+        if (fileInput.files[0]) handleFile({target: fileInput});
+    });
+</script>
+
+</body>
+</html>
