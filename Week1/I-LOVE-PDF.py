@@ -37,65 +37,89 @@ def generate_safe_filename(original_path, output_dir):
     return os.path.join(output_dir, f"{name_without_ext}_{timestamp}_{short_uuid}.txt")
 
 # ---------------------------------------------------------
-# 2. ★ 终极升级：多维 NLP 与空间感知清洗引擎 ★
+# 2. ★ 升级版：带学术引用处理与透明拦截的清洗引擎 ★
 # ---------------------------------------------------------
 class UltimateTextCleaner:
     @staticmethod
-    def is_noise_block(text, y0, y1, page_height):
-        """基于空间坐标和NLP规则判定是否为干扰块 (页眉/页脚/署名/日期)"""
+    def inspect_block(text, y0, y1, page_height, safe_mode):
+        """审查文本块，决定是保留还是拦截，并返回拦截原因"""
         text = text.strip()
         if not text:
-            return True
+            return True, "空白符"
 
-        # 1. 空间坐标判定：位于页面极高或极低处的短文本，大概率为页眉页脚
-        is_top = y0 < (page_height * 0.12)
-        is_bottom = y1 > (page_height * 0.88)
+        # 1. 绝对垃圾信息过滤
+        if re.search(r'Downloaded from http', text, re.IGNORECASE):
+            return True, "学术下载水印"
+
+        if re.fullmatch(r'^(?:[0-3]?\d\s+)?[A-Z][a-z]{2,8}\s+\d{4}$', text):
+            return True, "孤立日期"
+
+        if re.match(r'^([xvi]+|\d+)\s*$', text, re.IGNORECASE):
+            return True, "孤立页码"
+
+        # 2. 大写标题免死金牌 (即使在边缘也不拦截)
+        # 例如 "HOW DOES NATIVE ADVERTISING AFFECT SOCIETY AND DEMOCRACY?"
+        if text.isupper() and len(text) > 5:
+            return False, ""
+
+        # 3. 空间位置过滤 (顶部 8% 或 底部 8% 的极短文本)
+        is_top = y0 < (page_height * 0.08)
+        is_bottom = y1 > (page_height * 0.08)  # 修正：y1 > page_height * 0.92, 这里稍作冗余判定
+        is_bottom = y1 > (page_height * 0.92)
         word_count = len(text.split())
 
-        if (is_top or is_bottom) and word_count < 15:
-            return True
+        if (is_top or is_bottom) and word_count < 10:
+            return True, "边缘页眉/页脚"
 
-        # 2. 正则模式识别：匹配孤立的日期 (如: 25 November 2025, Nov 25 2025)
-        if re.fullmatch(r'^(?:[0-3]?\d\s+)?[A-Z][a-z]{2,8}\s+\d{4}$', text):
-            return True
+        # 4. 严苛模式下的句法过滤 (安全模式下关闭，防止误杀短标题)
+        if not safe_mode:
+            if word_count < 6 and not text[-1] in ".?!\"'":
+                words = text.split()
+                title_case_words = sum(1 for w in words if w.istitle())
+                if words and (title_case_words / len(words) > 0.6):
+                    return True, "无标点首字母大写(疑似署名)"
 
-        # 3. 正则模式识别：匹配包含罗马数字的前缀或孤立页码 (如: x Series Editor’s Introduction)
-        if re.match(r'^([xvi]+|\d+)\s+([A-Z].*)?$', text, re.IGNORECASE) and word_count < 8:
-            return True
-            
-        # 4. 匹配学术文章特有的下载水印戳
-        if re.search(r'Downloaded from http', text, re.IGNORECASE):
-            return True
+        return False, ""
 
-        # 5. NLP 句法试探：判定短署名或书名 (词数极少，无标点结尾，且首字母大写密集)
-        if word_count < 6 and not text[-1] in ".?!\"'":
-            # 计算大写字母开头的单词比例
-            words = text.split()
-            title_case_words = sum(1 for w in words if w.istitle())
-            if title_case_words / len(words) > 0.6:  # 如果大部分词首字母大写，多半是人名/书名
-                return True
-
-        return False
+    @staticmethod
+    def format_citations(text):
+        """
+        智能处理学术引用数字。
+        将单词后紧跟标点和数字的格式 (例如 industry.67)
+        转化为标准纯文本带括号格式 (例如 industry. [67])
+        """
+        # 匹配: 至少2个字母 + 标点(.,!?"') + 1到3位数字 + (空格或行尾)
+        text = re.sub(r'([a-zA-Z]{2,}[\.\,\?!\'"]+)(\d{1,3})(?=\s|$)', r'\1 [\2]', text)
+        return text
 
     @staticmethod
     def heal_text(text):
-        """修复文本内的连字符和多余换行"""
-        # 修复连字符换行断词: "misin-\nformation" -> "misinformation"
-        text = re.sub(r'([a-zA-Z]+)[-\xad]\s*\n\s*([a-zA-Z]+)', r'\1\2', text)
-        # 将段内剩余换行转为空格
-        text = text.replace('\n', ' ')
+        """修复文本内的连字符、多余换行，并格式化引用"""
+        # 如果是全大写标题，直接空格缝合所有行
+        if text.isupper():
+            text = text.replace('\n', ' ')
+        else:
+            # 修复连字符换行断词
+            text = re.sub(r'([a-zA-Z]+)[-\xad]\s*\n\s*([a-zA-Z]+)', r'\1\2', text)
+            # 将段内剩余换行转为空格
+            text = text.replace('\n', ' ')
+        
+        # 处理文内引用数字
+        text = UltimateTextCleaner.format_citations(text)
+        
         # 压缩多余空格
         return re.sub(r'\s{2,}', ' ', text).strip()
 
 # ---------------------------------------------------------
-# 3. 稳健型核心处理 Worker (支持跨页缝合)
+# 3. 稳健型核心处理 Worker
 # ---------------------------------------------------------
 class PDFProcessorWorker:
-    def __init__(self, pdf_paths, output_dir, scan_threshold, ocr_lang, gui_callback, log_callback, finish_callback):
+    def __init__(self, pdf_paths, output_dir, scan_threshold, ocr_lang, safe_mode, gui_callback, log_callback, finish_callback):
         self.pdf_paths = pdf_paths
         self.output_dir = output_dir
         self.scan_threshold = scan_threshold
         self.ocr_lang = ocr_lang
+        self.safe_mode = safe_mode
         self.gui_callback = gui_callback
         self.log_callback = log_callback
         self.finish_callback = finish_callback
@@ -104,16 +128,15 @@ class PDFProcessorWorker:
     def run(self):
         total_files = len(self.pdf_paths)
         for file_idx, pdf_path in enumerate(self.pdf_paths):
-            if self.is_cancelled:
-                break
+            if self.is_cancelled: break
             
-            self.log_callback(f"\n[{file_idx+1}/{total_files}] 🚀 开始提取与深度清洗: {os.path.basename(pdf_path)}")
+            self.log_callback(f"\n[{file_idx+1}/{total_files}] 🚀 开始提取: {os.path.basename(pdf_path)}")
             output_path = generate_safe_filename(pdf_path, self.output_dir)
             
             try:
                 self._process_single_pdf(pdf_path, output_path, file_idx, total_files)
             except Exception as e:
-                self.log_callback(f"❌ 错误: {str(e)}")
+                self.log_callback(f"❌ 严重错误跳过: {str(e)}")
                 continue 
 
         self.finish_callback()
@@ -123,7 +146,7 @@ class PDFProcessorWorker:
         total_pages = len(doc)
         
         final_document_text = ""
-        previous_text_ends_incomplete = False # 用于跨页无缝缝合的标记
+        previous_text_ends_incomplete = False
 
         for i, page in enumerate(doc):
             if self.is_cancelled: break
@@ -133,7 +156,6 @@ class PDFProcessorWorker:
                 page_height = page.rect.height
                 page_blocks_text = []
                 
-                # 扫描件判定机制保持不变...
                 if len(raw_text.strip()) < self.scan_threshold:
                     self.log_callback(f"  🔍 第 {i+1} 页启用 OCR ({self.ocr_lang})...")
                     if TESSERACT_AVAILABLE:
@@ -144,45 +166,49 @@ class PDFProcessorWorker:
                         cleaned_blocks = [UltimateTextCleaner.heal_text(b) for b in blocks if b.strip()]
                         page_blocks_text = cleaned_blocks
                 else:
-                    self.log_callback(f"  📄 第 {i+1} 页空间结构解析中...")
                     blocks = page.get_text("blocks")
-                    
-                    # 按 Y 轴坐标排序，确保阅读顺序
                     blocks.sort(key=lambda b: (b[1], b[0])) 
                     
                     for b in blocks:
-                        if b[6] == 0:  # 类型0为纯文本块
+                        if b[6] == 0:
                             x0, y0, x1, y1, block_text = b[0], b[1], b[2], b[3], b[4]
                             
-                            # ★ 核心：空间域与规则联合过滤噪音 ★
-                            if UltimateTextCleaner.is_noise_block(block_text, y0, y1, page_height):
+                            # 进行审查并获取原因
+                            is_noise, reason = UltimateTextCleaner.inspect_block(block_text, y0, y1, page_height, self.safe_mode)
+                            
+                            if is_noise:
+                                # 核心要求：明确告知用户过滤了什么
+                                preview_text = block_text.replace('\n', ' ').strip()[:30]
+                                if preview_text:
+                                    self.log_callback(f"    🗑️ 拦截 [{reason}]: {preview_text}...")
                                 continue
                                 
                             cleaned = UltimateTextCleaner.heal_text(block_text)
                             if cleaned:
                                 page_blocks_text.append(cleaned)
 
-                # ★ 核心：跨页跨块的自然语言缝合逻辑 ★
-                for block_idx, text_chunk in enumerate(page_blocks_text):
+                # 跨页缝合与标题排版逻辑
+                for text_chunk in page_blocks_text:
                     if not text_chunk: continue
                     
-                    # 判断当前块的开头是否为小写字母
-                    starts_with_lower = text_chunk[0].islower() if text_chunk else False
+                    is_heading = text_chunk.isupper() and len(text_chunk) > 5
                     
-                    if previous_text_ends_incomplete and (starts_with_lower or text_chunk[0] in ",;:'\""):
-                        # 如果上一块没结束，且这一块是小写开头，说明是一句话被切断了，直接空格缝合
-                        final_document_text += " " + text_chunk
-                    else:
-                        # 否则作为新段落换行拼接
-                        if final_document_text:
-                            final_document_text += "\n\n"
-                        final_document_text += text_chunk
-                    
-                    # 更新状态变量：判断这一块是不是“未完待续”
-                    if text_chunk[-1] not in ".?!\"'":
-                        previous_text_ends_incomplete = True
-                    else:
+                    if is_heading:
+                        # 如果是标题，强制独立段落
+                        final_document_text += f"\n\n{text_chunk}\n\n"
                         previous_text_ends_incomplete = False
+                    else:
+                        starts_with_lower = text_chunk[0].islower()
+                        
+                        if previous_text_ends_incomplete and (starts_with_lower or text_chunk[0] in ",;:'\""):
+                            # 缝合上一句
+                            final_document_text += " " + text_chunk
+                        else:
+                            # 新起一段
+                            final_document_text += ("\n\n" if final_document_text else "") + text_chunk
+                        
+                        # 判定结尾
+                        previous_text_ends_incomplete = text_chunk[-1] not in ".?!\"'"
 
             except Exception as page_error:
                 self.log_callback(f"  ❌ 第 {i+1} 页解析异常: {str(page_error)}")
@@ -190,28 +216,30 @@ class PDFProcessorWorker:
             self.gui_callback((file_idx + ((i + 1) / total_pages)) / total_files)
 
         with open(output_path, 'w', encoding='utf-8') as f:
-            f.write(final_document_text.strip())
-        self.log_callback(f"✅ 提取完成！已安全导出至: \n{output_path}")
+            # 清理多余的连续换行
+            cleaned_final_text = re.sub(r'\n{3,}', '\n\n', final_document_text.strip())
+            f.write(cleaned_final_text)
+        self.log_callback(f"✅ 提取完成！已导出至: \n{output_path}")
 
 # ---------------------------------------------------------
-# 4. GUI 面板 (保持极简与美观)
+# 4. GUI 面板 (新增安全模式切换)
 # ---------------------------------------------------------
 class ModernPDFApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         ctk.set_appearance_mode("Dark")
         ctk.set_default_color_theme("blue")
-        self.title("✨ 智能PDF文本解析引擎 V3.0 (终极纯净版)")
-        self.geometry("900x650")
+        self.title("✨ 智能PDF文本解析引擎 V4.0 (防误杀与引用保留版)")
+        self.geometry("950x700")
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.pdf_files = []
         self.setup_ui()
 
     def setup_ui(self):
-        self.sidebar_frame = ctk.CTkFrame(self, width=250, corner_radius=0)
+        self.sidebar_frame = ctk.CTkFrame(self, width=280, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(6, weight=1)
+        self.sidebar_frame.grid_rowconfigure(8, weight=1)
 
         self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="PDF Core UI", font=ctk.CTkFont(size=24, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(30, 20))
@@ -223,19 +251,24 @@ class ModernPDFApp(ctk.CTk):
         self.btn_clear_files.grid(row=2, column=0, padx=20, pady=10)
 
         self.label_lang = ctk.CTkLabel(self.sidebar_frame, text="OCR 识别语言:")
-        self.label_lang.grid(row=3, column=0, padx=20, pady=(20, 0), sticky="w")
+        self.label_lang.grid(row=3, column=0, padx=20, pady=(15, 0), sticky="w")
         self.lang_option = ctk.CTkOptionMenu(self.sidebar_frame, values=["eng", "chi_sim", "eng+chi_sim"])
         self.lang_option.set("eng+chi_sim")
         self.lang_option.grid(row=4, column=0, padx=20, pady=10)
 
-        self.label_threshold = ctk.CTkLabel(self.sidebar_frame, text="扫描件触发阈值 (字符数):")
+        self.label_threshold = ctk.CTkLabel(self.sidebar_frame, text="扫描件判定阈值:")
         self.label_threshold.grid(row=5, column=0, padx=20, pady=(10, 0), sticky="w")
         self.threshold_entry = ctk.CTkEntry(self.sidebar_frame)
         self.threshold_entry.insert(0, "50")
-        self.threshold_entry.grid(row=6, column=0, padx=20, pady=10, sticky="n")
+        self.threshold_entry.grid(row=6, column=0, padx=20, pady=5, sticky="n")
 
-        self.btn_start = ctk.CTkButton(self.sidebar_frame, text="🚀 启动深度净化与导出", command=self.start_processing, height=50, fg_color="#2FA572", hover_color="#106A43")
-        self.btn_start.grid(row=7, column=0, padx=20, pady=(10, 30))
+        # 新增：安全模式复选框
+        self.safe_mode_var = ctk.BooleanVar(value=True)
+        self.safe_mode_checkbox = ctk.CTkCheckBox(self.sidebar_frame, text="安全模式 (保留短标题/防误删)", variable=self.safe_mode_var)
+        self.safe_mode_checkbox.grid(row=7, column=0, padx=20, pady=15, sticky="w")
+
+        self.btn_start = ctk.CTkButton(self.sidebar_frame, text="🚀 启动透明化解析", command=self.start_processing, height=50, fg_color="#2FA572", hover_color="#106A43")
+        self.btn_start.grid(row=8, column=0, padx=20, pady=(10, 30), sticky="s")
 
         self.main_frame = ctk.CTkFrame(self, corner_radius=10)
         self.main_frame.grid(row=0, column=1, padx=20, pady=20, sticky="nsew")
@@ -248,9 +281,9 @@ class ModernPDFApp(ctk.CTk):
         self.console_textbox = ctk.CTkTextbox(self.main_frame, font=ctk.CTkFont(family="Consolas", size=13))
         self.console_textbox.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
         
-        self.log_to_console("初始化完成。多维空间与 NLP 深度过滤系统已激活。")
-        if TESSERACT_AVAILABLE:
-            self.log_to_console("✅ 检测到 Tesseract，自动图文识别处于就绪状态。")
+        self.log_to_console("初始化完成。拦截动作将在控制台透明化输出。")
+        self.log_to_console("✅ 学术文内引用数字 (如 industry.67) 智能转换已就绪。")
+        self.log_to_console("✅ 大写标题免死金牌机制已生效。")
 
         self.progress_bar = ctk.CTkProgressBar(self.main_frame, height=15)
         self.progress_bar.grid(row=2, column=0, padx=20, pady=(10, 20), sticky="ew")
@@ -263,16 +296,15 @@ class ModernPDFApp(ctk.CTk):
     def add_files(self):
         files = filedialog.askopenfilenames(filetypes=[("PDF Files", "*.pdf")])
         if files:
-            for f in self.pdf_files[:]:
-                pass
+            for f in self.pdf_files[:]: pass
             self.pdf_files.extend([f for f in files if f not in self.pdf_files])
             self.status_label.configure(text=f"已导入 {len(self.pdf_files)} 个 PDF 文件准备处理")
-            self.log_to_console(f"📁 新增导入了 {len(files)} 个文件。")
+            self.log_to_console(f"📁 新增导入 {len(files)} 个文件。")
 
     def clear_files(self):
         self.pdf_files.clear()
         self.status_label.configure(text="等待导入文件...")
-        self.log_to_console("🗑️ 任务列表已清空。")
+        self.log_to_console("🗑️ 列表已清空。")
         self.progress_bar.set(0)
 
     def start_processing(self):
@@ -283,23 +315,27 @@ class ModernPDFApp(ctk.CTk):
         if not output_dir:
             return
 
-        self.btn_start.configure(state="disabled", text="⚙️ 净化处理中...")
+        self.btn_start.configure(state="disabled", text="⚙️ 处理中...")
         self.btn_add_files.configure(state="disabled")
         self.progress_bar.set(0)
         self.console_textbox.delete("1.0", "end")
         
         self.processor = PDFProcessorWorker(
-            self.pdf_files, output_dir, int(self.threshold_entry.get()), self.lang_option.get(),
-            lambda v: self.after(0, self.progress_bar.set, v),
-            lambda msg: self.after(0, self.log_to_console, msg),
-            lambda: self.after(0, self.process_finished)
+            pdf_paths=self.pdf_files, 
+            output_dir=output_dir, 
+            scan_threshold=int(self.threshold_entry.get()), 
+            ocr_lang=self.lang_option.get(),
+            safe_mode=self.safe_mode_var.get(),
+            gui_callback=lambda v: self.after(0, self.progress_bar.set, v),
+            log_callback=lambda msg: self.after(0, self.log_to_console, msg),
+            finish_callback=lambda: self.after(0, self.process_finished)
         )
         threading.Thread(target=self.processor.run, daemon=True).start()
 
     def process_finished(self):
-        self.btn_start.configure(state="normal", text="🚀 启动深度净化与导出")
+        self.btn_start.configure(state="normal", text="🚀 启动透明化解析")
         self.btn_add_files.configure(state="normal")
-        self.status_label.configure(text="🎉 所有任务净化处理完毕！")
+        self.status_label.configure(text="🎉 所有任务处理完毕！")
         self.log_to_console("\n============== 任务结束 ==============")
 
 if __name__ == "__main__":
